@@ -7,9 +7,9 @@ dependencies:
   - sphinx
   - pip
   - click
-  - codecov
   - pip:
     - m2r
     - sphinx-issues
     - sphinx-gallery
     - amtool
+    - codecov
