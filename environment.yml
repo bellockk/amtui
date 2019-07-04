@@ -11,3 +11,4 @@ dependencies:
     - m2r
     - sphinx-issues
     - sphinx-gallery
+    - amtool
