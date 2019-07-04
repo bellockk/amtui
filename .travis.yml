@@ -14,7 +14,7 @@ before_install:
   - conda update -q conda
   - conda info -a
 install:
-  - conda env update --file environment.yml
+  - conda env -n base update --file environment.yml
 script: nosetests
 deploy:
   provider: pypi
