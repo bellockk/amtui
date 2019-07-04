@@ -16,7 +16,7 @@ python:
   # install:
   #   - conda install wxpython
   #   - conda install -c conda-forge tox
-  # script: tox
+script: nosetests
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
