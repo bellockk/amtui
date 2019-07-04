@@ -11,7 +11,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['Click>=6.0', 'amtool>=0.1.9']
+requirements = ['Click>=6.0', 'amtool>=0.1.9', 'wxPython>=4.0.6']
 
 setup_requirements = [ ]
 

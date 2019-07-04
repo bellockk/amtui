@@ -286,7 +286,7 @@ class MainFrame(wx.Frame):
         self.Destroy()
 
 
-def gui():
+def main():
     app = wx.App()
     frame = MainFrame(None)
     frame.Show()

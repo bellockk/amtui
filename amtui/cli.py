@@ -3,15 +3,12 @@
 """Console script for amtui."""
 import sys
 import click
-from amtui.gui
+from amtui.main import main
 
 @click.command()
 def gui(args=None):
     """Console script for amtui."""
-    click.echo("Replace this message by putting your code into "
-               "amtui.cli.main")
-    click.echo("See click documentation at http://click.pocoo.org/")
-    return 0
+    return main()
 
 
 if __name__ == "__main__":
