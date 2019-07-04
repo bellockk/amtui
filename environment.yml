@@ -6,6 +6,7 @@ dependencies:
   - wxpython
   - sphinx
   - pip
+  - click
   - pip:
     - m2r
     - sphinx-issues
