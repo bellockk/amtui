@@ -13,7 +13,7 @@ before_install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda info -a
-install: conda install wxpython
+install: conda install wxpython tox
 script: tox
 deploy:
   provider: pypi
