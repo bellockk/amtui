@@ -16,9 +16,7 @@ before_install:
 install:
   - conda env update -n base --file environment.yml
 script:
-  - codecov erase
-  - nosetests --with-coverage
-after_success:
+  - nosetests --with-coverage --cover-package amtui
   - codecov
 deploy:
   provider: pypi
