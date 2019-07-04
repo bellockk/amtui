@@ -15,7 +15,11 @@ before_install:
   - conda info -a
 install:
   - conda env update -n base --file environment.yml
-script: nosetests
+script:
+  - codecov erase
+  - nosetests --with-coverage
+after_success:
+  - codecov
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
