@@ -1,0 +1,10 @@
+import platform
+
+# Create Build Environment
+env = Environment()
+env.Append(PDFLATEXFLAGS=['-halt-on-error', '-shell-escape'])
+Export('env')
+
+# Build
+doc = SConscript('src/SConscript', variant_dir='build', duplicate=1)
+Install('dist', doc)
