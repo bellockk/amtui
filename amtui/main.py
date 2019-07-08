@@ -1,14 +1,11 @@
 import os
 import sys
-import traceback
 import wx
 import wx.aui
 import wx.lib.newevent
 import logging
 
-__all__ = ['gui']
-LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
+__all__ = ['main']
 
 try:
     dirName = os.path.dirname(os.path.abspath(__file__))
@@ -21,57 +18,8 @@ from amt.load import load
 sys.path.insert(0, dirName)
 import images
 from custom_status_bar import CustomStatusBar
-
-
-def MyExceptionHook(etype, value, trace):
-    """
-    Handler for all unhandled exceptions.
-
-    :param `etype`: the exception type (`SyntaxError`, `ZeroDivisionError`,
-                    etc...);
-    :type `etype`: `Exception`
-    :param string `value`: the exception error message;
-    :param string `trace`: the traceback header, if any (otherwise, it prints
-    the standard Python header: ``Traceback (most recent call last)``.
-    """
-    tmp = traceback.format_exception(etype, value, trace)
-    exception = "".join(tmp)
-    logging.error(exception)
-
-
-class wxLogHandler(logging.Handler):
-    """
-    A handler class which sends log strings to a wx object
-    """
-    wxLogEvent, EVT_WX_LOG_EVENT = wx.lib.newevent.NewEvent()
-
-    def __init__(self, wxDest=None):
-        """
-        Initialize the handler
-        @param wxDest: the destination object to post the event to
-        @type wxDest: wx.Window
-        """
-        logging.Handler.__init__(self)
-        self.wxDest = wxDest
-        self.level = logging.DEBUG
-
-    def flush(self):
-        """
-        does nothing for this handler
-        """
-        pass
-
-    def emit(self, record):
-        """
-        Emit a record.
-
-        """
-        try:
-            msg = self.format(record)
-            evt = self.wxLogEvent(message=msg, levelname=record.levelname)
-            wx.PostEvent(self.wxDest, evt)
-        except (KeyboardInterrupt, SystemExit):
-            raise
+from log_handler import WXLogHandler
+from log_handler import WXExceptionHook
 
 
 class MainFrame(wx.Frame):
@@ -83,12 +31,12 @@ class MainFrame(wx.Frame):
         wx.Frame.__init__(self, parent, id, title, pos, size, style)
 
         # Install Error Hook
-        sys.excepthook = MyExceptionHook
+        sys.excepthook = WXExceptionHook
 
         # Create a logger for this class
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.DEBUG)
-        handler = wxLogHandler(self)
+        handler = WXLogHandler(self)
         handler.setFormatter(logging.Formatter(
             "[%(asctime)s][%(levelname)-8s] %(message)s"))
         # self.log.addHandler(handler)
@@ -145,7 +93,7 @@ class MainFrame(wx.Frame):
         self.content_not_saved = False
 
         self.Bind(wx.EVT_CLOSE, self.OnQuit)
-        self.Bind(wxLogHandler.EVT_WX_LOG_EVENT, self.onLogEvent)
+        self.Bind(WXLogHandler.EVT_WX_LOG_EVENT, self.onLogEvent)
 
     def InitUI(self):
 
@@ -207,10 +155,10 @@ class MainFrame(wx.Frame):
                     node, key, self.record_image)
 
     def OnNew(self, e):
-        LOGGER.info("New")
+        logging.info("New")
 
     def OnOpenFile(self, e):
-        LOGGER.info("Open File")
+        logging.info("Open File")
         if self.content_not_saved:
             if wx.MessageBox("Save current session?", "Please confirm",
                              wx.ICON_QUESTION | wx.YES_NO, self) == wx.NO:
@@ -238,7 +186,7 @@ class MainFrame(wx.Frame):
         self.tree.Expand(root)
 
     def OnOpenDirectory(self, e):
-        LOGGER.info("Open Directory")
+        logging.info("Open Directory")
         if self.content_not_saved:
             if wx.MessageBox("Save current session?", "Please confirm",
                              wx.ICON_QUESTION | wx.YES_NO, self) == wx.NO:
@@ -263,12 +211,11 @@ class MainFrame(wx.Frame):
         self.decorate_tree(root, load(pathname))
         self.tree.Expand(root)
 
-
     def OnSave(self, e):
-        LOGGER.info("Save")
+        logging.info("Save")
 
     def OnSaveAs(self, e):
-        LOGGER.info("Save As")
+        logging.info("Save As")
 
     def onLogEvent(self, event):
         msg = event.message.strip("\r") + "\n"
@@ -276,7 +223,7 @@ class MainFrame(wx.Frame):
         event.Skip()
 
     def OnClose(self, event):
-        LOGGER.info("Close")
+        logging.info("Close")
 
     def OnQuit(self, event):
         # deinitialize the frame manager
@@ -287,6 +234,7 @@ class MainFrame(wx.Frame):
 
 
 def main():
+    logging.getLogger().setLevel(logging.DEBUG)
     app = wx.App()
     frame = MainFrame(None)
     frame.Show()
