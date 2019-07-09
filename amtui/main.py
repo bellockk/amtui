@@ -20,6 +20,7 @@ import images
 from custom_status_bar import CustomStatusBar
 from log_handler import WXLogHandler
 from log_handler import WXExceptionHook
+from artifact_tree import ArtifactTree
 
 
 class MainFrame(wx.Frame):
@@ -53,17 +54,17 @@ class MainFrame(wx.Frame):
         self.folder_image = self.image_list.Add(wx.ArtProvider.GetBitmap(
             wx.ART_FOLDER, wx.ART_OTHER, wx.Size(16, 16)))
         self.file_list_image = self.image_list.Add(
-            images.square_brackets.Image.Scale(16,16).ConvertToBitmap())
+            images.square_brackets.Image.Scale(16, 16).ConvertToBitmap())
         self.file_dictionary_image = self.image_list.Add(
-            images.curly_brackets.Image.Scale(16,16).ConvertToBitmap())
+            images.curly_brackets.Image.Scale(16, 16).ConvertToBitmap())
         self.list_image = self.image_list.Add(wx.ArtProvider.GetBitmap(
             wx.ART_LIST_VIEW, wx.ART_OTHER, wx.Size(16, 16)))
         self.dictionary_image = self.image_list.Add(wx.ArtProvider.GetBitmap(
             wx.ART_REPORT_VIEW, wx.ART_OTHER, wx.Size(16, 16)))
         self.record_image = self.image_list.Add(wx.ArtProvider.GetBitmap(
             wx.ART_EXECUTABLE_FILE, wx.ART_OTHER, wx.Size(16, 16)))
-        self.tree = wx.TreeCtrl(self, -1, wx.Point(0, 0), wx.Size(160, 250),
-                           wx.TR_DEFAULT_STYLE | wx.NO_BORDER)
+        self.tree = ArtifactTree(self, -1, wx.Point(0, 0), wx.Size(160, 250),
+                                 wx.TR_DEFAULT_STYLE | wx.NO_BORDER)
         self.tree.AssignImageList(self.image_list)
         text2 = wx.TextCtrl(self, -1, '',
                             wx.DefaultPosition, wx.Size(200, 150),
