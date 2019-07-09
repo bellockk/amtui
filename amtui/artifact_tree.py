@@ -17,6 +17,14 @@ class ArtifactTree(wx.TreeCtrl):
             'Artifact Tree KeyPress Detected: KeyCode=%s Character=%s' % (
                 event.GetKeyCode(), chr(event.GetKeyCode())))
 
+        # Enable Vi movements
+        if chr(event.GetKeyCode()).lower() == 'j':
+            # TODO: Post a wx.ID_DOWN event
+            pass
+
+        # Allow other bindings to consume this event
+        event.Skip()
+
     def OnShowPopup(self, event):
         self.popupmenu = wx.Menu()
         for text in ["Add", "Delete", "Edit"]:
