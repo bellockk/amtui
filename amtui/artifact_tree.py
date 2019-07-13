@@ -10,7 +10,11 @@ class ArtifactTree(wx.TreeCtrl):
 
         # Bind to Events
         self.Bind(wx.EVT_TREE_ITEM_RIGHT_CLICK, self.OnShowPopup)
-        self.Bind(wx.EVT_TREE_KEY_DOWN, self.OnKeyDown)
+        # self.Bind(wx.EVT_TREE_KEY_DOWN, self.OnKeyDown)
+
+        # Key Bindings
+        self.SetAcceleratorTable(wx.AcceleratorTable([
+            (wx.ACCEL_NORMAL, ord('J'), wx.ID_DOWN)]))
 
     def OnKeyDown(self, event):
         logging.debug(

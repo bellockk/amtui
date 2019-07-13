@@ -6,21 +6,15 @@
 [![Documentation Status](https://readthedocs.org/projects/amtui/badge/?version=latest)](http://amtui.readthedocs.io/?badge=latest)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 
-
-
-
-Statement of Purpose
---------------------
+## Statement of Purpose
 
 A user interface to the Artifact Management Tool
-
 
 * Free software: MIT license
 * Documentation: https://amtui.readthedocs.io.
 
 
 ## Features
---------
 
 * TODO
 
