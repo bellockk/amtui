@@ -2,7 +2,9 @@ import os
 import sys
 import wx
 import wx.aui
+import wx.adv
 import wx.lib.newevent
+from wx.lib.wordwrap import wordwrap
 import logging
 
 __all__ = ['main']
@@ -80,11 +82,14 @@ class MainFrame(wx.Frame):
 
         # add the panes to the manager
         self._mgr.AddPane(self.tree, wx.LEFT, 'Artifact Tree')
-        self._mgr.AddPane(text2, wx.BOTTOM, 'Log Console')
+        self._mgr.AddPane(text2, wx.aui.AuiPaneInfo().Name(
+            'Log Console').Caption('Log Console').Bottom().CloseButton(True))
         self._mgr.AddPane(text3, wx.CENTER)
 
         # tell the manager to 'commit' all the changes just made
         self._mgr.Update()
+
+        self.Bind(wx.aui.EVT_AUI_PANE_CLOSE, self.on_pane_close)
 
         # Create Status Bar
         self.status_bar = CustomStatusBar(self)
@@ -122,7 +127,6 @@ class MainFrame(wx.Frame):
         quit_button = fileMenu.Append(
             wx.ID_EXIT, '&Quit\tCtrl+Q', 'Exit the application')
 
-        # Bind Events
         self.Bind(wx.EVT_MENU, self.OnNew, new_button)
         self.Bind(wx.EVT_MENU, self.OnOpenFile, open_file_button)
         self.Bind(wx.EVT_MENU, self.OnOpenDirectory, open_directory_button)
@@ -132,6 +136,22 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnQuit, quit_button)
 
         menubar.Append(fileMenu, '&File')
+
+        # View Menu
+        view_menu = wx.Menu()
+        self.view_log = view_menu.AppendCheckItem(wx.ID_ANY, 'Show Log Window')
+        self.view_log.Check(True)
+        menubar.Append(view_menu, '&View')
+ 
+        self.Bind(wx.EVT_MENU, self.on_view_log, self.view_log)
+
+        # Help Menu
+        help_menu = wx.Menu()
+        about = help_menu.Append(wx.ID_ANY, 'About')
+        menubar.Append(help_menu, '&Help')
+
+        self.Bind(wx.EVT_MENU, self.on_about, about)
+
         self.SetMenuBar(menubar)
 
     def decorate_tree(self, node, branch):
@@ -232,6 +252,38 @@ class MainFrame(wx.Frame):
 
         # delete the frame
         self.Destroy()
+
+    def on_view_log(self, event):
+        self.log.info('Toggle view Log')
+        self.log_console_visibility(event.IsChecked())
+
+    def on_pane_close(self, event):
+        caption = event.GetPane().caption
+        self.log.info(f'Closed Pane {caption}')
+        if caption == 'Log Console':
+            self.log_console_visibility(False)
+            event.Veto()
+
+    def log_console_visibility(self, visible: bool):
+        self.view_log.Check(visible)
+        self._mgr.GetPane('Log Console').Show(visible)
+        self._mgr.Update()
+
+    def on_about(self, event):
+        info = wx.adv.AboutDialogInfo()
+        info.Name = "AMT GUI"
+        info.Version = "1.2.3"
+        info.Copyright = "(c) 2013-2020 Kenneth E. Bellock"
+        info.Description = wordwrap(
+            'A user interface for working with the artifact management tool.',
+            350, wx.ClientDC(self))
+        info.WebSite = ("https://github.com/amt", "AMT Homepage")
+        info.Developers = ["Kenneth E. Bellock"]
+        info.License = wordwrap('', 500, wx.ClientDC(self))
+
+        # Then we call wx.AboutBox giving it that info object
+        wx.adv.AboutBox(info)
+
 
 
 def main():
