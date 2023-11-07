@@ -4,6 +4,8 @@ import wx
 import wx.aui
 import wx.adv
 import wx.lib.newevent
+import wx.lib.gridmovers
+import wx.propgrid
 from wx.lib.wordwrap import wordwrap
 import logging
 
@@ -75,16 +77,21 @@ class MainFrame(wx.Frame):
         text2.SetFont(wx.Font(10, wx.MODERN, wx.NORMAL, wx.NORMAL, False,
                               u'Consolas'))
 
-        text3 = wx.TextCtrl(self, -1, 'Main content window',
-                            wx.DefaultPosition, wx.Size(200, 150),
-                            wx.NO_BORDER | wx.TE_MULTILINE)
+        # text3 = wx.TextCtrl(self, -1, 'Main content window',
+        #                     wx.DefaultPosition, wx.Size(200, 150),
+        #                     wx.NO_BORDER | wx.TE_MULTILINE)
         self.logconsole = text2
+
+        self.pg = wx.propgrid.PropertyGrid(self, style=wx.propgrid.PG_SPLITTER_AUTO_CENTER |
+                wx.propgrid.PG_AUTO_SORT | wx.propgrid.PG_TOOLBAR)
+        self.pg.Append(wx.propgrid.StringProperty('String', value='hi'))
+        self.pg.Append(wx.propgrid.StringProperty('String2', value='there'))
 
         # add the panes to the manager
         self._mgr.AddPane(self.tree, wx.LEFT, 'Artifact Tree')
         self._mgr.AddPane(text2, wx.aui.AuiPaneInfo().Name(
             'Log Console').Caption('Log Console').Bottom().CloseButton(True))
-        self._mgr.AddPane(text3, wx.CENTER)
+        self._mgr.AddPane(self.pg, wx.CENTER)
 
         # tell the manager to 'commit' all the changes just made
         self._mgr.Update()
@@ -127,13 +134,13 @@ class MainFrame(wx.Frame):
         quit_button = fileMenu.Append(
             wx.ID_EXIT, '&Quit\tCtrl+Q', 'Exit the application')
 
-        self.Bind(wx.EVT_MENU, self.OnNew, new_button)
-        self.Bind(wx.EVT_MENU, self.OnOpenFile, open_file_button)
-        self.Bind(wx.EVT_MENU, self.OnOpenDirectory, open_directory_button)
-        self.Bind(wx.EVT_MENU, self.OnSave, self.save_button)
-        self.Bind(wx.EVT_MENU, self.OnSaveAs, self.save_as_button)
-        self.Bind(wx.EVT_MENU, self.OnClose, self.close_button)
-        self.Bind(wx.EVT_MENU, self.OnQuit, quit_button)
+        self.Bind(wx.EVT_MENU, self.on_new, new_button)
+        self.Bind(wx.EVT_MENU, self.on_open_file, open_file_button)
+        self.Bind(wx.EVT_MENU, self.on_open_directory, open_directory_button)
+        self.Bind(wx.EVT_MENU, self.on_save, self.save_button)
+        self.Bind(wx.EVT_MENU, self.on_save_as, self.save_as_button)
+        self.Bind(wx.EVT_MENU, self.on_close, self.close_button)
+        self.Bind(wx.EVT_MENU, self.on_quit, quit_button)
 
         menubar.Append(fileMenu, '&File')
 
@@ -175,10 +182,10 @@ class MainFrame(wx.Frame):
                 sub_node = self.tree.AppendItem(
                     node, key, self.record_image)
 
-    def OnNew(self, e):
+    def on_new(self, e):
         logging.info("New")
 
-    def OnOpenFile(self, e):
+    def on_open_file(self, e):
         logging.info("Open File")
         if self.content_not_saved:
             if wx.MessageBox("Save current session?", "Please confirm",
@@ -206,7 +213,7 @@ class MainFrame(wx.Frame):
         self.decorate_tree(root, load(pathname))
         self.tree.Expand(root)
 
-    def OnOpenDirectory(self, e):
+    def on_open_directory(self, e):
         logging.info("Open Directory")
         if self.content_not_saved:
             if wx.MessageBox("Save current session?", "Please confirm",
@@ -232,10 +239,10 @@ class MainFrame(wx.Frame):
         self.decorate_tree(root, load(pathname))
         self.tree.Expand(root)
 
-    def OnSave(self, e):
+    def on_save(self, event):
         logging.info("Save")
 
-    def OnSaveAs(self, e):
+    def on_save_as(self, event):
         logging.info("Save As")
 
     def onLogEvent(self, event):
@@ -243,10 +250,10 @@ class MainFrame(wx.Frame):
         self.logconsole.AppendText(msg)
         event.Skip()
 
-    def OnClose(self, event):
+    def on_close(self, event):
         logging.info("Close")
 
-    def OnQuit(self, event):
+    def on_quit(self, event):
         # deinitialize the frame manager
         self._mgr.UnInit()
 
@@ -283,8 +290,6 @@ class MainFrame(wx.Frame):
 
         # Then we call wx.AboutBox giving it that info object
         wx.adv.AboutBox(info)
-
-
 
 def main():
     logging.getLogger().setLevel(logging.DEBUG)
